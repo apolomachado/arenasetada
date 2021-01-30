@@ -1,0 +1,6 @@
+name: ArenaSetada
+version: 1.0
+author: Nescaaallz
+main: com.github.nescaaallz.arenasetada.ArenaSetada
+commands:
+  arena:

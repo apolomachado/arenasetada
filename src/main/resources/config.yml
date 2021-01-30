@@ -1,0 +1,27 @@
+Messages:
+  Help:
+    - '&6&lArena &6- Comandos'
+    - '&f/arena &8- &ePara exibir os comandos relacionados à arena.'
+    - '&f/arena entrar &8- &ePara entrar na arena.'
+    - '&f/arena sair &8- &ePara sair da arena.'
+  HelpStaff:
+    - '&7/arena setentrada &8- &cPara setar a localização da arena.'
+    - '&7/arena setsaida &8- &cPara setar a localização da saída da arena.'
+    - '&7/arena setinventario &8- &cPara setar o inventário da arena.'
+  Unauthorized: "&cVocê não tem permissão para usar este comando."
+  SetInventory: "&aInventário setado com sucesso."
+  SetEntrada: "&aEntrada definida com sucesso."
+  SetSaida: "&aSaída definida com sucesso."
+  NotFound: "&cVocê não está na arena."
+  Already: "&cVocê já está na arena."
+  Left: "&cVocê saiu da arena."
+  Join: "&aVocê entrou na arena."
+
+Locations:
+  Entrada: {}
+  Saida: {}
+
+Inventory:
+  Fingerprint:
+    - '&4Este item só pode ser utilizado dentro do /arena.'
+  Items: {}
