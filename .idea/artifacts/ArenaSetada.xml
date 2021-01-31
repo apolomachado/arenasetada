@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ArenaSetada">
+    <output-path>$PROJECT_DIR$/../folder/server tests/plugins</output-path>
+    <root id="archive" name="arenasetada.jar">
+      <element id="module-output" name="arenasetada" />
+    </root>
+  </artifact>
+</component>

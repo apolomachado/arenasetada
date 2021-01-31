@@ -2,6 +2,7 @@ package com.github.nescaaallz.arenasetada;
 
 import com.github.nescaaallz.arenasetada.commands.ArenaCommand;
 import com.github.nescaaallz.arenasetada.listeners.ArenaListener;
+import com.github.nescaaallz.arenasetada.model.Armor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class ArenaSetada extends JavaPlugin {
     private Location entrada;
     private Location saida;
     private HashMap<Integer, ItemStack> inventory = new HashMap<>();
+    private Armor armor;
 
     private Listener arenaListener;
 
@@ -44,6 +46,14 @@ public class ArenaSetada extends JavaPlugin {
         return inventory;
     }
 
+    public Armor getArmor() {
+        return armor;
+    }
+
+    public boolean isUnstable() {
+        return unstable;
+    }
+
     public void onEnable() {
         saveDefaultConfig();
         initialLoad();
@@ -63,35 +73,37 @@ public class ArenaSetada extends JavaPlugin {
     }
 
     public void initialLoad() {
-        getServer().getConsoleSender().sendMessage(String.format("ArenaSetada | Inventário carregado com %i erro(s).", loadInventory()));
+        getServer().getConsoleSender().sendMessage(String.format("ArenaSetada | Inventário carregado com %s erro(s).", String.valueOf(loadInventory())));
         if(loadLocation(LocationType.Entrada) && loadLocation(LocationType.Saida)) {
             getServer().getConsoleSender().sendMessage("ArenaSetada | Localização carregada com sucesso.");
         } else {
             getServer().getConsoleSender().sendMessage("ArenaSetada | Houve um erro ao carregar a localização da arena.");
         }
         if(unstable) {
-            getServer().getConsoleSender().sendMessage("ArenaSetada | Houveram erros ao carregar a configuração do sistema e o plugin foi desabilitado.");
-            getServer().getPluginManager().disablePlugin(this);
+            getServer().getConsoleSender().sendMessage("ArenaSetada | Houveram erros ao carregar a configuração do sistema e algumas funcionalidades do plugin foram desabilitadas.");
         }
     }
 
     public int loadInventory() {
         int errors = 0;
+
+        this.armor = new Armor(getConfig().getItemStack("Inventory.Armor.Helmet"), getConfig().getItemStack("Inventory.Armor.Chestplate"), getConfig().getItemStack("Inventory.Armor.Leggings"), getConfig().getItemStack("Inventory.Armor.Boots"), this);
+
         for(String key : getConfig().getConfigurationSection("Inventory.Items").getKeys(false)) {
             try {
                 Integer slot = Integer.parseInt(key);
-                ItemStack item = getConfig().getItemStack(key);
-
-                ItemMeta itemMeta = item.getItemMeta();
-                List<String> lore = new ArrayList<>();
-                for(String str : getConfig().getStringList("Inventory.Fingerprint")) {
-                    lore.add(str.replace('&', '§'));
+                ItemStack item = getConfig().getItemStack("Inventory.Items." + key);
+                if(item != null) {
+                    ItemMeta itemMeta = item.getItemMeta();
+                    List<String> lore = new ArrayList<>();
+                    for(String str : getConfig().getStringList("Inventory.Fingerprint")) {
+                        lore.add(str.replace('&', '§'));
+                    }
+                    itemMeta.setLore(lore);
+                    item.setItemMeta(itemMeta);
                 }
-                itemMeta.setLore(lore);
-                item.setItemMeta(itemMeta);
-
                 getInventory().put(slot, item);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 unstable = true;
                 errors++;
             }
@@ -99,37 +111,44 @@ public class ArenaSetada extends JavaPlugin {
         return errors;
     }
 
-    public void setInventory(Inventory inventory) {
-        getInventory().clear();
-        for(int slot = 0; slot < 35; slot++) {
-            ItemStack itemStack = inventory.getItem(slot);
-            if(itemStack != null) {
+    public void setInventory(Player player, boolean adminAction) {
+        if(adminAction) {
 
-                getConfig().set("Inventory.Items." + slot, itemStack);
-                saveConfig();
+            this.armor = new Armor(player.getInventory().getHelmet(), player.getInventory().getChestplate(), player.getInventory().getLeggings(), player.getInventory().getBoots(), this);
+            getArmor().save();
 
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                List<String> lore = new ArrayList<>();
-                for(String str : getConfig().getStringList("Inventory.Fingerprint")) {
-                    lore.add(str.replace('&', '§'));
+            getConfig().set("Inventory.Items", null);
+            saveConfig();
+
+            for(int slot = 0; slot < 35; slot++) {
+                ItemStack itemStack = player.getInventory().getItem(slot);
+                if(itemStack != null) {
+                    getConfig().set("Inventory.Items." + slot, itemStack);
+                    saveConfig();
+                    getInventory().put(slot, itemStack);
                 }
-                itemMeta.setLore(lore);
-                itemStack.setItemMeta(itemMeta);
-
-                getInventory().put(slot, itemStack);
             }
-        }
-        inventory.clear();
-    }
 
-    public void setInventory(Player player) {
-        player.getInventory().setArmorContents(null);
-        player.getInventory().clear();
-        for(int slot : getInventory().keySet()) {
-            ItemStack itemStack = getInventory().get(slot);
-            if(itemStack != null) {
-                player.getInventory().setItem(slot, itemStack);
+            player.getInventory().clear();
+            player.getInventory().setArmorContents(null);
+
+        } else {
+            player.getInventory().setArmorContents(null);
+            player.getInventory().clear();
+            for(int slot : getInventory().keySet()) {
+                ItemStack itemStack = getInventory().get(slot);
+                if(itemStack != null) {
+                    ItemMeta itemMeta = itemStack.getItemMeta();
+                    List<String> lore = new ArrayList<>();
+                    for(String str : getConfig().getStringList("Inventory.Fingerprint")) {
+                        lore.add(str.replace('&', '§'));
+                    }
+                    itemMeta.setLore(lore);
+                    itemStack.setItemMeta(itemMeta);
+                    player.getInventory().setItem(slot, itemStack);
+                }
             }
+            getArmor().equip(player);
         }
     }
 
@@ -178,6 +197,12 @@ public class ArenaSetada extends JavaPlugin {
             this.entrada = location;
         } else {
             this.saida = location;
+        }
+    }
+
+    public void clearConfigurationSectionKeys(String configurationSection) {
+        for(String str : getConfig().getConfigurationSection(configurationSection).getKeys(false)) {
+            getConfig().set(str, null);
         }
     }
 }

@@ -54,19 +54,26 @@ public class ArenaListener implements Listener {
     @EventHandler
     void onPlayerDeath(PlayerDeathEvent e) {
         if(getPlugin().getArenaPlayers().contains(e.getEntity())) {
+            e.getEntity().getInventory().clear();
+            e.getEntity().getInventory().setArmorContents(null);
             getPlugin().getArenaPlayers().remove(e.getEntity());
             if(e.getEntity().getKiller() instanceof Player && getPlugin().getArenaPlayers().contains(e.getEntity().getKiller())) {
-                getPlugin().setInventory(e.getEntity().getKiller());
+                getPlugin().setInventory(e.getEntity().getKiller(), false);
             }
         }
     }
 
+    /**
+     * Provavelmente quebrado
+     * **/
     public boolean isArenaItem(ItemStack itemStack) {
         if(itemStack != null) {
-            if(itemStack.getItemMeta() != null) {
+            if(itemStack.hasItemMeta()) {
                 for(String lore : getPlugin().getConfig().getStringList("Inventory.Fingerprint")) {
-                    if(itemStack.getItemMeta().getLore().contains(lore.replace('&', '§'))) {
-                        return true;
+                    for(String str : itemStack.getItemMeta().getLore()) {
+                        if(str.contains(lore)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -96,9 +103,11 @@ public class ArenaListener implements Listener {
         }
 
         for(int slot = 0; slot < 35; slot++) {
-            if(isArenaItem(player.getInventory().getItem(slot))) {
-                player.getInventory().setItem(slot, null);
-                removedItems++;
+            if(player.getInventory().getItem(slot) != null) {
+                if(isArenaItem(player.getInventory().getItem(slot))) {
+                    player.getInventory().setItem(slot, null);
+                    removedItems++;
+                }
             }
         }
 

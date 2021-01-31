@@ -38,21 +38,37 @@ public class ArenaCommand implements CommandExecutor {
             } else {
                 switch(args[0]) {
                     case "entrar": {
+                        if(getPlugin().isUnstable()) return true;
                         if(getPlugin().getArenaPlayers().contains(player)) {
                             player.sendMessage(getConfig().getString("Messages.Already").replace('&', '§'));
                         } else {
-                            player.teleport(getPlugin().getEntrada());
-                            getPlugin().setInventory(player);
+                            if(emptyInventory(player)) {
+                                player.sendMessage("§4Você tem algum item no inventário!");
+                                return true;
+                            }
+                            try {
+                                player.teleport(getPlugin().getEntrada());
+                            } catch (Exception e) {
+                                player.sendMessage("§4A localização da arena não está definida, reporte a algum STAFF!");
+                                return true;
+                            }
+                            getPlugin().setInventory(player, false);
                             getPlugin().getArenaPlayers().add(player);
                             player.sendMessage(getConfig().getString("Messages.Join").replace('&', '§'));
                         }
                         break;
                     }
                     case "sair": {
+                        if(getPlugin().isUnstable()) return true;
                         if(getPlugin().getArenaPlayers().contains(player)) {
                             player.getInventory().setArmorContents(null);
                             player.getInventory().clear();
-                            player.teleport(getPlugin().getSaida());
+                            try {
+                                player.teleport(getPlugin().getSaida());
+                            } catch (Exception e) {
+                                player.sendMessage("§4A localização da saída não está definida, reporte a algum STAFF!");
+                                return true;
+                            }
                             getPlugin().getArenaPlayers().remove(player);
                             player.sendMessage(getConfig().getString("Messages.Left").replace('&', '§'));
                         } else {
@@ -80,7 +96,11 @@ public class ArenaCommand implements CommandExecutor {
                     }
                     case "setinventario": {
                         if(player.hasPermission("arena.staff")) {
-                            getPlugin().setInventory(player.getInventory());
+                            if(getPlugin().getArenaPlayers().contains(player)) {
+                                player.sendMessage("§4Saia da arena antes de setar o inventário.");
+                                return true;
+                            }
+                            getPlugin().setInventory(player, true);
                             player.sendMessage(getConfig().getString("Messages.SetInventory").replace('&', '§'));
                         } else {
                             player.sendMessage(getConfig().getString("Messages.Unauthorized").replace('&', '§'));
@@ -91,5 +111,26 @@ public class ArenaCommand implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    public boolean emptyInventory(Player player) {
+        if(player.getInventory().getHelmet() != null) {
+            return false;
+        }
+        if(player.getInventory().getChestplate() != null) {
+            return false;
+        }
+        if(player.getInventory().getLeggings() != null) {
+            return false;
+        }
+        if(player.getInventory().getBoots() != null) {
+            return false;
+        }
+        for(int x = 0; x < 35; x++) {
+            if(player.getInventory().getItem(x) != null) {
+                return false;
+            }
+        }
+        return true;
     }
 }
