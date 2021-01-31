@@ -42,7 +42,7 @@ public class ArenaCommand implements CommandExecutor {
                         if(getPlugin().getArenaPlayers().contains(player)) {
                             player.sendMessage(getConfig().getString("Messages.Already").replace('&', '§'));
                         } else {
-                            if(emptyInventory(player)) {
+                            if(!emptyInventory(player)) {
                                 player.sendMessage("§4Você tem algum item no inventário!");
                                 return true;
                             }

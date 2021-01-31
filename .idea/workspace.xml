@@ -77,22 +77,14 @@
       <screen x="0" y="0" width="1440" height="870" />
     </state>
     <state x="500" y="176" key="FileChooserDialogImpl/0.0.1440.870@0.0.1440.870" timestamp="1612051277263" />
-    <state x="200" y="9" key="SettingsEditor" timestamp="1612051280445">
+    <state x="200" y="9" key="SettingsEditor" timestamp="1612057718897">
       <screen x="0" y="0" width="1440" height="870" />
     </state>
-    <state x="200" y="9" key="SettingsEditor/0.0.1440.870@0.0.1440.870" timestamp="1612051280445" />
+    <state x="200" y="9" key="SettingsEditor/0.0.1440.870@0.0.1440.870" timestamp="1612057718897" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/github/nescaaallz/arenasetada/listeners/ArenaListener.java</url>
-          <line>68</line>
-          <properties class="com.github.nescaaallz.arenasetada.listeners.ArenaListener" method="isArenaItem">
-            <option name="EMULATED" value="true" />
-          </properties>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/github/nescaaallz/arenasetada/listeners/ArenaListener.java</url>
           <line>47</line>
@@ -108,6 +100,14 @@
             <option name="EMULATED" value="true" />
           </properties>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/github/nescaaallz/arenasetada/listeners/ArenaListener.java</url>
+          <line>68</line>
+          <properties class="com.github.nescaaallz.arenasetada.listeners.ArenaListener" method="isArenaItem">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

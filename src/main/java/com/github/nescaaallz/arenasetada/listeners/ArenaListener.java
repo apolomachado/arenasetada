@@ -71,7 +71,7 @@ public class ArenaListener implements Listener {
             if(itemStack.hasItemMeta()) {
                 for(String lore : getPlugin().getConfig().getStringList("Inventory.Fingerprint")) {
                     for(String str : itemStack.getItemMeta().getLore()) {
-                        if(str.contains(lore)) {
+                        if(str.contains(lore.replace('&', '§'))) {
                             return true;
                         }
                     }
